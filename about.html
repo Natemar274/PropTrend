@@ -21,9 +21,9 @@
   </p>
 
   <p>
-    Forecasts five years into the future are generated using a damped Holt–Winters method (double exponential smoothing with a damped trend). 
-    This builds on simple exponential smoothing by adding a trend term whose influence decays over time, 
-    so recent changes drive the short-term forecast while long-term projections gently flatten out, avoiding overfitting.
+    Forecasts five years into the future are generated using additive exponential smoothing with a linear trend. 
+    This method extends historical trends forward in time without introducing seasonal components or damping. 
+    It captures persistent upward or downward momentum in the data, providing a transparent and interpretable projection consistent with observed pricing dynamics.
   </p>
 
   <p>
