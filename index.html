@@ -25,7 +25,8 @@
     .then(data => {
       const dates = data.dates.map(d => new Date(d));
       const cities = Object.keys(data).filter(k => k !== 'dates');
-      const palette = Plotly.d3.schemeCategory10;
+      // Manual category10 palette
+      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
       const traces = [];
 
       cities.forEach((city, idx) => {
@@ -62,7 +63,8 @@
         title: { text: 'Australian Capital City House Prices Over Time (Actual & Forecast)' },
         xaxis: { title: { text: 'Date' } },
         yaxis: { title: { text: 'Median Price (AUD)' } },
-        hovermode: 'x unified'
+        hovermode: 'x unified',
+        colorway: palette
       };
 
       const config = { responsive: true, displayModeBar: false };
