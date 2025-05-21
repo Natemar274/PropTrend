@@ -33,9 +33,9 @@ def read_and_forecast(csv_path, json_path):
         series = df_prices[city].astype(float).dropna()
         try:
             model = ExponentialSmoothing(series, trend='add', seasonal=None)
-            fit = model.fit(optimized=True, use_brute=True)  # brute-force avoids convergence failure
+            fit = model.fit(optimized=True, use_brute=True)
             forecast = fit.forecast(60)
-            full_series = pd.concat([series, forecast]).reset_index(drop=True)
+            full_series = pd.concat([series, forecast]).reset_index(drop=True).round(2)
             results[city] = full_series.tolist()
         except Exception as e:
             print(f"Error processing {city}: {e}")
