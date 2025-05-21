@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PropTrend</title>
+  <script data-goatcounter="https://proptrend.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <!-- Plotly.js CDN -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+</head>
+<body>
+
+<header style="width: 100%; padding: 10px 20px; box-sizing: border-box;">
+  <img src="PropTrend.png" alt="PropTrend logo" style="height: 200px;">
+</header>
+
+<!-- Chart container -->
+<div id="chart" style="width: 100%; height: 600px;"></div>
+
+<script>
+  // Load combined JSON and render Plotly chart
+  fetch('data_combined.json')
+    .then(res => res.json())
+    .then(data => {
+      const dates = data.dates.map(d => new Date(d));
+      const cities = Object.keys(data).filter(k => k !== 'dates');
+      const traces = [];
+
+      cities.forEach(city => {
+        const vals = data[city];
+        const totalPoints = vals.length;
+        const histPoints = totalPoints - 60;
+
+        // Actual series (solid)
+        traces.push({
+          x: dates.slice(0, histPoints),
+          y: vals.slice(0, histPoints),
+          name: city,
+          mode: 'lines',
+          line: { dash: 'solid', width: 2 },
+          legendgroup: city,
+          hoverinfo: 'name+y'
+        });
+
+        // Forecast series (dashed)
+        traces.push({
+          x: dates.slice(histPoints),
+          y: vals.slice(histPoints),
+          name: city,
+          mode: 'lines',
+          line: { dash: 'dash', width: 2 },
+          legendgroup: city,
+          showlegend: false,
+          hoverinfo: 'y'
+        });
+      });
+
+      const layout = {
+        title: { text: 'Australian Capital City House Prices Over Time (Actual & Forecast)' },
+        xaxis: { title: { text: 'Date' } },
+        yaxis: { title: { text: 'Median Price (AUD)' } },
+        hovermode: 'x unified'
+      };
+
+      const config = { responsive: true, displayModeBar: false };
+
+      Plotly.newPlot('chart', traces, layout, config);
+    })
+    .catch(err => console.error('Error loading data:', err));
+</script>
+
+<!-- Footer button -->
+<div style="text-align: center; margin-top: 20px;">
+  <a href="about.html">
+    <button style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+      About
+    </button>
+  </a>
+</div>
+
+</body>
+</html>
