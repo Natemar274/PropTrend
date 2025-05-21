@@ -19,37 +19,39 @@
 <div id="chart" style="width: 100%; height: 600px;"></div>
 
 <script>
-  // Load combined JSON and render Plotly chart
+  // Load combined JSON and render Plotly chart with consistent colours
   fetch('data_combined.json')
     .then(res => res.json())
     .then(data => {
       const dates = data.dates.map(d => new Date(d));
       const cities = Object.keys(data).filter(k => k !== 'dates');
+      const palette = Plotly.d3.schemeCategory10;
       const traces = [];
 
-      cities.forEach(city => {
+      cities.forEach((city, idx) => {
         const vals = data[city];
         const totalPoints = vals.length;
         const histPoints = totalPoints - 60;
+        const color = palette[idx % palette.length];
 
-        // Actual series (solid)
+        // Historical data (solid line)
         traces.push({
           x: dates.slice(0, histPoints),
           y: vals.slice(0, histPoints),
           name: city,
           mode: 'lines',
-          line: { dash: 'solid', width: 2 },
+          line: { dash: 'solid', width: 2, color: color },
           legendgroup: city,
           hoverinfo: 'name+y'
         });
 
-        // Forecast series (dashed)
+        // Forecast data (dashed line)
         traces.push({
           x: dates.slice(histPoints),
           y: vals.slice(histPoints),
           name: city,
           mode: 'lines',
-          line: { dash: 'dash', width: 2 },
+          line: { dash: 'dash', width: 2, color: color },
           legendgroup: city,
           showlegend: false,
           hoverinfo: 'y'
