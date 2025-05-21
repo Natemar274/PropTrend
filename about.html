@@ -21,9 +21,9 @@
   </p>
 
   <p>
-    Forecasts five years into the future are generated using simple exponential smoothing — a time series method
-    that applies exponentially decreasing weights to past observations to forecast future values. It assumes recent
-    data is more indicative of future trends, without overfitting.
+    Forecasts five years into the future are generated using a damped Holt–Winters method (double exponential smoothing with a damped trend). 
+    This builds on simple exponential smoothing by adding a trend term whose influence decays over time, 
+    so recent changes drive the short-term forecast while long-term projections gently flatten out, avoiding overfitting.
   </p>
 
   <p>
