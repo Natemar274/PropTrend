@@ -19,7 +19,7 @@
 <div id="chart" style="width: 100%; height: 600px;"></div>
 
 <script>
-  // Load combined JSON and render Plotly chart with consistent colours
+  // Load combined JSON and render Plotly chart with consistent colours and full tooltips
   fetch('data_combined.json')
     .then(res => res.json())
     .then(data => {
@@ -55,7 +55,7 @@
           line: { dash: 'dash', width: 2, color: color },
           legendgroup: city,
           showlegend: false,
-          hoverinfo: 'y'
+          hoverinfo: 'name+y'
         });
       });
 
