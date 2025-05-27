@@ -12,11 +12,11 @@
 <body>
 
 <header style="width: 100%; padding: 10px 20px; box-sizing: border-box;">
-  <img src="PropTrend.png" alt="PropTrend logo" style="height: 200px;">
+  <img src="PropTrend.png" alt="PropTrend logo" style="height: auto; max-height: 150px; width: 100%; max-width: 300px; display: block; margin: 0 auto;">
 </header>
 
 <!-- Chart container -->
-<div id="chart" style="width: 100%; height: 600px;"></div>
+<div id="chart" style="width: 100%; height: 80vh; max-width: 100vw;"></div>
 
 <script>
   // Load combined JSON and render Plotly chart with consistent colours and full tooltips
@@ -64,7 +64,8 @@
         xaxis: { title: { text: 'Date' } },
         yaxis: { title: { text: 'Median Price (AUD)' } },
         hovermode: 'x unified',
-        colorway: palette
+        margin: { t: 50, l: 50, r: 30, b: 50 },
+        autosize: true
       };
 
       const config = { responsive: true, displayModeBar: false };
@@ -75,7 +76,7 @@
 </script>
 
 <!-- Footer button -->
-<div style="text-align: center; margin-top: 20px;">
+<div style="text-align: center; margin: 20px auto; max-width: 100%;">
   <a href="about.html">
     <button style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
       About
