@@ -59,6 +59,32 @@ def read_and_forecast(csv_path, json_path):
         print(f"Error writing JSON: {e}")
         sys.exit(1)
 
+    # === Additional Transformations ===
+    df_pct = df.copy()
+    df_pct.set_index('Date', inplace=True)
+
+    # 12-month % change
+    df_yoy = df_pct.pct_change(periods=12) * 100
+    df_yoy.reset_index(inplace=True)
+    df_yoy['Date'] = df_yoy['Date'].dt.strftime('%Y-%m-%d')
+    try:
+        with open('data_yoy.json', 'w') as f:
+            json.dump(df_yoy.to_dict(orient='records'), f, indent=2)
+        print("✅ YoY % change data written to data_yoy.json")
+    except Exception as e:
+        print(f"Error writing YoY JSON: {e}")
+
+    # 1-month % change
+    df_mom = df_pct.pct_change(periods=1) * 100
+    df_mom.reset_index(inplace=True)
+    df_mom['Date'] = df_mom['Date'].dt.strftime('%Y-%m-%d')
+    try:
+        with open('data_mom.json', 'w') as f:
+            json.dump(df_mom.to_dict(orient='records'), f, indent=2)
+        print("✅ MoM % change data written to data_mom.json")
+    except Exception as e:
+        print(f"Error writing MoM JSON: {e}")
+
     try:
         subprocess.run(['git', 'add', '-A'], check=True)  # stage all modified files
         subprocess.run(['git', 'commit', '-m', GIT_COMMIT_MSG], check=True)
