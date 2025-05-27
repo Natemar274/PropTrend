@@ -18,6 +18,12 @@
 <!-- Chart container -->
 <div id="chart" style="width: 100%; height: 80vh; max-width: 100vw;"></div>
 
+<h2 style="text-align: center; margin-top: 60px;">12-Month Rolling % Change</h2>
+<div id="yoyChart" style="width: 100%; height: 80vh; max-width: 100vw;"></div>
+
+<h2 style="text-align: center; margin-top: 60px;">Monthly % Change</h2>
+<div id="momChart" style="width: 100%; height: 80vh; max-width: 100vw;"></div>
+
 <script>
   // Load combined JSON and render Plotly chart with consistent colours and full tooltips
   fetch('data_combined.json')
@@ -83,6 +89,58 @@
     </button>
   </a>
 </div>
+
+<script>
+  // Load and render YoY chart
+  fetch('data_yoy.json')
+    .then(res => res.json())
+    .then(data => {
+      const dates = data.map(d => d.Date);
+      const cities = Object.keys(data[0]).filter(k => k !== 'Date');
+      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
+      const traces = cities.map((city, idx) => ({
+        x: dates,
+        y: data.map(d => d[city]),
+        name: city,
+        mode: 'lines',
+        line: { width: 2, color: palette[idx % palette.length] }
+      }));
+
+      Plotly.newPlot('yoyChart', traces, {
+        title: '12-Month Rolling % Change',
+        xaxis: { title: 'Date' },
+        yaxis: { title: 'Annual % Change' },
+        hovermode: 'x unified',
+        margin: { t: 50, l: 50, r: 30, b: 50 }
+      }, { responsive: true });
+    });
+</script>
+
+<script>
+  // Load and render MoM chart
+  fetch('data_mom.json')
+    .then(res => res.json())
+    .then(data => {
+      const dates = data.map(d => d.Date);
+      const cities = Object.keys(data[0]).filter(k => k !== 'Date');
+      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
+      const traces = cities.map((city, idx) => ({
+        x: dates,
+        y: data.map(d => d[city]),
+        name: city,
+        mode: 'lines',
+        line: { width: 2, color: palette[idx % palette.length] }
+      }));
+
+      Plotly.newPlot('momChart', traces, {
+        title: 'Monthly % Change',
+        xaxis: { title: 'Date' },
+        yaxis: { title: 'Monthly % Change' },
+        hovermode: 'x unified',
+        margin: { t: 50, l: 50, r: 30, b: 50 }
+      }, { responsive: true });
+    });
+</script>
 
 </body>
 </html>
