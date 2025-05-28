@@ -65,6 +65,7 @@ def read_and_forecast(csv_path, json_path):
 
     # 12-month % change
     df_yoy = df_pct.pct_change(periods=12) * 100
+    df_yoy = df_yoy.dropna()
     df_yoy.reset_index(inplace=True)
     df_yoy['Date'] = df_yoy['Date'].dt.strftime('%Y-%m-%d')
     try:
@@ -76,6 +77,7 @@ def read_and_forecast(csv_path, json_path):
 
     # 1-month % change
     df_mom = df_pct.pct_change(periods=1) * 100
+    df_mom = df_mom.dropna()
     df_mom.reset_index(inplace=True)
     df_mom['Date'] = df_mom['Date'].dt.strftime('%Y-%m-%d')
     try:

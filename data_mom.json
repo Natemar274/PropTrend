@@ -1,16 +1,5 @@
 [
   {
-    "Date": "2003-09-01",
-    "Sydney": NaN,
-    "Melbourne": NaN,
-    "Brisbane": NaN,
-    "Adelaide": NaN,
-    "Perth": NaN,
-    "Hobart": NaN,
-    "Darwin": NaN,
-    "Canberra": NaN
-  },
-  {
     "Date": "2003-10-01",
     "Sydney": 2.708333333333335,
     "Melbourne": 2.7118644067796627,
