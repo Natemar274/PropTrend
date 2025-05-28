@@ -25,14 +25,26 @@
 </head>
 <body>
 
-<header style="width: 100%; padding: 10px 20px; box-sizing: border-box;">
-  <img src="PropTrend.png" alt="PropTrend logo" style="width: 100%; max-width: 300px; height: auto; display: block; margin: 20px auto;">
-  <p style="text-align: center; margin-bottom: 10px;"><a href="about.html" style="font-weight: 600; text-decoration: none; color: #1f77b4;">About</a></p>
-</div>
+<header style="position: relative; width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+  <img src="PropTrend.png" alt="PropTrend logo" style="max-width: 300px; height: auto; display: block;">
+  <a href="about.html" style="
+    padding: 8px 16px;
+    background-color: #1f77b4;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
+  " 
+  onmouseover="this.style.backgroundColor='#155a8a'" 
+  onmouseout="this.style.backgroundColor='#1f77b4'">
+    About
+  </a>
+</header>
 <p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 0 auto 30px;">
   <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
 </p>
-</header>
 
 <!-- Chart container -->
 <div id="chart" style="width: 100%; height: 80vh; max-width: 100vw;"></div>
