@@ -119,15 +119,18 @@
         mode: 'lines',
         line: { width: 2, color: palette[idx % palette.length] }
       }));
-      
 
-      Plotly.newPlot('yoyChart', traces, {
-        title: '12-Month Rolling % Change',
+      const layout = {
+        title: { text: '12-Month Rolling % Change' },
         xaxis: { title: 'Date' },
         yaxis: { title: 'Annual % Change' },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 }
-      }, { responsive: true });
+      };
+
+      const config = { responsive: true, displayModeBar: true };
+
+      Plotly.newPlot('yoyChart', traces, layout, config);
     });
 </script>
 
@@ -147,13 +150,17 @@
         line: { width: 2, color: palette[idx % palette.length] }
       }));
 
-      Plotly.newPlot('momChart', traces, {
-        title: 'Monthly % Change',
+      const layout = {
+        title: { text: 'Monthly % Change' },
         xaxis: { title: 'Date' },
         yaxis: { title: 'Monthly % Change' },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 }
-      }, { responsive: true });
+      };
+
+      const config = { responsive: true, displayModeBar: true };
+
+      Plotly.newPlot('momChart', traces, layout, config);
     });
 </script>
 
