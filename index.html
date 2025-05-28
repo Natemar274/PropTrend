@@ -63,7 +63,7 @@
           mode: 'lines',
           line: { dash: 'solid', width: 2, color: color },
           legendgroup: city,
-          hoverinfo: 'name+y'
+          hoverinfo: 'x+y+name'
         });
 
         // Forecast data (dashed line)
@@ -75,7 +75,7 @@
           line: { dash: 'dash', width: 2, color: color },
           legendgroup: city,
           showlegend: false,
-          hoverinfo: 'name+y'
+          hoverinfo: 'x+y+name'
         });
       });
 
@@ -88,7 +88,7 @@
         autosize: true
       };
 
-      const config = { responsive: true, displayModeBar: false };
+      const config = { responsive: true, displayModeBar: true };
 
       Plotly.newPlot('chart', traces, layout, config);
     })
