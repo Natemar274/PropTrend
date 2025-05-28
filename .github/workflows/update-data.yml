@@ -2,7 +2,7 @@ name: Monthly Data Update
 
 on:
   schedule:
-    - cron: '0 2 1 * *'       # 1st of every month at 02:00 UTC
+    - cron: '0 2 5 * *'       # 5th of every month at 02:00 UTC
   workflow_dispatch:         # allows manual trigger
 
 jobs:
