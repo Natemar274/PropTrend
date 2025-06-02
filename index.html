@@ -25,6 +25,10 @@
 </head>
 <body>
 
+<p id="last-updated" style="text-align: center; font-size: 0.95rem; margin-top: 10px;">
+  Loading latest update...
+</p>
+
 <header style="position: relative; width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
   <img src="PropTrend.png" alt="PropTrend logo" style="max-width: 300px; height: auto; display: block;">
   <a href="about.html" style="
@@ -129,6 +133,10 @@
           layer: 'below'
         }]
       };
+
+      const lastDate = new Date(data.dates[data.dates.length - 1]);
+      const formatted = `${lastDate.getDate().toString().padStart(2, '0')}/${(lastDate.getMonth() + 1).toString().padStart(2, '0')}/${lastDate.getFullYear()}`;
+      document.getElementById('last-updated').textContent = `Last updated: ${formatted}`;
 
       const config = { responsive: true, displayModeBar: true };
 
