@@ -25,7 +25,7 @@
 </head>
 <body>
 
-<p id="last-updated" style="text-align: center; font-size: 0.95rem; margin-top: 10px;">
+<p id="last-updated" style="text-align: center; font-size: 0.95rem; padding: 12px 0 18px;">
   Loading latest update...
 </p>
 
@@ -136,7 +136,7 @@
 
       const lastDate = new Date(data.dates[data.dates.length - 1]);
       const formatted = `${lastDate.getDate().toString().padStart(2, '0')}/${(lastDate.getMonth() + 1).toString().padStart(2, '0')}/${lastDate.getFullYear()}`;
-      document.getElementById('last-updated').textContent = `Last updated: ${formatted}`;
+      document.getElementById('last-updated').innerHTML = `Last updated: <strong>${formatted}</strong>`;
 
       const config = { responsive: true, displayModeBar: true };
 
