@@ -134,7 +134,8 @@
         }]
       };
 
-      const lastDate = new Date(data.dates[data.dates.length - 1]);
+      // Use the last non-forecast (historical) data point for the "Last updated" message
+      const lastDate = new Date(data.dates[data.dates.length - 61]);
       const formatted = `${lastDate.getDate().toString().padStart(2, '0')}/${(lastDate.getMonth() + 1).toString().padStart(2, '0')}/${lastDate.getFullYear()}`;
       document.getElementById('last-updated').innerHTML = `Last updated: <strong>${formatted}</strong>`;
 
