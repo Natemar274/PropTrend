@@ -35,34 +35,19 @@ def read_and_forecast(csv_path, json_path):
 
     for city in df_prices.columns:
         series = df_prices[city].astype(float).dropna()
-        try:
-            # Apply log transform for more stable growth extrapolation
-            log_series = np.log(series)
 
-            # Fit damped trend exponential smoothing on log-transformed series
-            model = ExponentialSmoothing(log_series, trend='add', damped_trend=True, seasonal=None)
-            fit = model.fit(optimized=True, use_brute=True)
-            forecast_log = fit.forecast(60)
+        pct_changes = series.pct_change(periods=12).dropna()
+        if len(pct_changes) < 12:
+            print(f"Not enough data for {city}, skipping.")
+            continue
 
-            # Inverse transform
-            forecast = np.exp(forecast_log)
+        weights = np.linspace(1, 2, len(pct_changes))
+        weights /= weights.sum()
+        weighted_avg_growth = (pct_changes.values * weights).sum()
 
-            # Estimate historical CAGR
-            n_years = len(series) / 12
-            if n_years > 0 and series.iloc[0] > 0:
-                cagr = (series.iloc[-1] / series.iloc[0]) ** (1 / n_years) - 1
-            else:
-                cagr = 0.0
-            # Apply a minimum CAGR floor to prevent flat forecasts
-            cagr = max(cagr, 0.025)
-            capped_growth = (1 + cagr) ** (np.arange(1, 61) / 12)
-            max_vals = series.iloc[-1] * capped_growth
-            forecast = np.minimum(forecast, max_vals)
-
-            full_series = pd.concat([series, pd.Series(forecast)]).reset_index(drop=True).round(2)
-            results[city] = full_series.tolist()
-        except Exception as e:
-            print(f"Error processing {city}: {e}")
+        forecast = [series.iloc[-1] * (1 + weighted_avg_growth / 12) ** i for i in range(1, 61)]
+        full_series = pd.concat([series, pd.Series(forecast)]).reset_index(drop=True).round(2)
+        results[city] = full_series.tolist()
 
     last_date = df['Date'].iloc[-1]
     future_dates = [
