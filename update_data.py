@@ -65,6 +65,7 @@ def read_and_forecast(csv_path, json_path):
     # === Cash Rate JSON Generation ===
     try:
         cash_df = pd.read_csv(CASH_RATE_CSV)
+        cash_df.rename(columns={"Cash Rate Target (%)": "Cash Rate Target"}, inplace=True)
         cash_df["Date"] = pd.to_datetime(cash_df["Date"], dayfirst=True).dt.strftime("%Y-%m-%d")
         cash_data = cash_df.to_dict(orient="records")
         with open(CASH_RATE_JSON, "w") as f:
