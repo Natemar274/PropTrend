@@ -1,5 +1,6 @@
 import pandas as pd
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import numpy as np
 import json
 import subprocess
 import sys
@@ -35,10 +36,24 @@ def read_and_forecast(csv_path, json_path):
     for city in df_prices.columns:
         series = df_prices[city].astype(float).dropna()
         try:
-            model = ExponentialSmoothing(series, trend='add', seasonal=None)
+            # Apply log transform for more stable growth extrapolation
+            log_series = np.log(series)
+
+            # Fit damped trend exponential smoothing on log-transformed series
+            model = ExponentialSmoothing(log_series, trend='add', damped_trend=True, seasonal=None)
             fit = model.fit(optimized=True, use_brute=True)
-            forecast = fit.forecast(60)
-            full_series = pd.concat([series, forecast]).reset_index(drop=True).round(2)
+            forecast_log = fit.forecast(60)
+
+            # Inverse transform and clip long-run growth
+            forecast = np.exp(forecast_log)
+
+            # Apply long-term growth constraint (e.g., max 0.75% monthly = ~9.4% CAGR)
+            max_growth_rate = 0.0075
+            base_value = series.iloc[-1]
+            max_vals = base_value * (1 + max_growth_rate) ** np.arange(1, 61)
+            forecast = np.minimum(forecast, max_vals)
+
+            full_series = pd.concat([series, pd.Series(forecast)]).reset_index(drop=True).round(2)
             results[city] = full_series.tolist()
         except Exception as e:
             print(f"Error processing {city}: {e}")
