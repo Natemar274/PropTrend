@@ -44,13 +44,17 @@ def read_and_forecast(csv_path, json_path):
             fit = model.fit(optimized=True, use_brute=True)
             forecast_log = fit.forecast(60)
 
-            # Inverse transform and clip long-run growth
+            # Inverse transform
             forecast = np.exp(forecast_log)
 
-            # Apply long-term growth constraint (e.g., max 0.75% monthly = ~9.4% CAGR)
-            max_growth_rate = 0.0075
-            base_value = series.iloc[-1]
-            max_vals = base_value * (1 + max_growth_rate) ** np.arange(1, 61)
+            # Estimate historical CAGR
+            n_years = len(series) / 12
+            if n_years > 0 and series.iloc[0] > 0:
+                cagr = (series.iloc[-1] / series.iloc[0]) ** (1 / n_years) - 1
+            else:
+                cagr = 0.0
+            capped_growth = (1 + cagr) ** (np.arange(1, 61) / 12)
+            max_vals = series.iloc[-1] * capped_growth
             forecast = np.minimum(forecast, max_vals)
 
             full_series = pd.concat([series, pd.Series(forecast)]).reset_index(drop=True).round(2)
