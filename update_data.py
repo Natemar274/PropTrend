@@ -6,6 +6,9 @@ import sys
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+CASH_RATE_CSV = 'Cash Rate Target.csv'
+CASH_RATE_JSON = 'cash_rate.json'
+
 # === Configuration ===
 CSV_FILE = 'Price Dataset.csv'
 JSON_FILE = 'data_combined.json'
@@ -58,6 +61,17 @@ def read_and_forecast(csv_path, json_path):
     except Exception as e:
         print(f"Error writing JSON: {e}")
         sys.exit(1)
+
+    # === Cash Rate JSON Generation ===
+    try:
+        cash_df = pd.read_csv(CASH_RATE_CSV)
+        cash_df["Date"] = pd.to_datetime(cash_df["Date"], dayfirst=True).dt.strftime("%Y-%m-%d")
+        cash_data = cash_df.to_dict(orient="records")
+        with open(CASH_RATE_JSON, "w") as f:
+            json.dump(cash_data, f, indent=2)
+        print("✅ Cash rate data written to cash_rate.json")
+    except Exception as e:
+        print(f"Error processing cash rate data: {e}")
 
     # === Additional Transformations ===
     df_pct = df.copy()
