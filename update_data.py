@@ -53,6 +53,8 @@ def read_and_forecast(csv_path, json_path):
                 cagr = (series.iloc[-1] / series.iloc[0]) ** (1 / n_years) - 1
             else:
                 cagr = 0.0
+            # Apply a minimum CAGR floor to prevent flat forecasts
+            cagr = max(cagr, 0.025)
             capped_growth = (1 + cagr) ** (np.arange(1, 61) / 12)
             max_vals = series.iloc[-1] * capped_growth
             forecast = np.minimum(forecast, max_vals)
