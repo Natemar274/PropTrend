@@ -11,15 +11,15 @@
   <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
   <style>
     :root {
-      --bg: #f9f9fb;
-      --card-bg: #fff;
-      --text: #222;
-      --primary: #1f77b4;
-      --accent: #155a8a;
+      --bg: #111827;
+      --card-bg: #1f2937;
+      --text: #e5e7eb;
+      --primary: #3b82f6;
+      --accent: #2563eb;
     }
 
     body {
-      background-color: var(--bg);
+      background: linear-gradient(to bottom, #1e293b, #111827);
       font-family: 'Inter', sans-serif;
       color: var(--text);
       margin: 0;
@@ -30,8 +30,14 @@
       border-radius: 8px;
       padding: 20px;
       margin: 40px auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       max-width: 95%;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
     }
 
     .nav-button {
@@ -53,7 +59,14 @@
       font-weight: 600;
       font-family: inherit;
       text-align: center;
-      margin-top: 60px;
+      margin-top: 30px;
+    }
+
+    #last-updated {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+      padding: 12px 0 0;
     }
   </style>
 </head>
@@ -69,7 +82,7 @@
     <a href="about.html" class="nav-button">About</a>
   </nav>
 </header>
-<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px;">
+<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px; color: #cbd5e1;">
   <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
 </p>
 
