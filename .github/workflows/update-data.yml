@@ -29,8 +29,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
           git add data_combined.json data_yoy.json data_mom.json
-          git commit -m "chore: monthly data update"
+          git commit -m "chore: monthly data update" || echo "No changes to commit"
           git push
 
       - name: Send notification email
