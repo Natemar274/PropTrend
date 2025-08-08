@@ -69,6 +69,22 @@
       width: 100%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+    .card > div[id$="Chart"] {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
     #aboutModal {
       overflow-y: auto;
     }
@@ -188,7 +204,9 @@
 </p>
 
 <header class="header-bar">
-  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; flex-grow: 1;">PropTrend</div>
+  <div class="header-left">
+    <div class="header-title">PropTrend</div>
+  </div>
   <nav class="header-actions" style="gap: 12px;">
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
       <div class="thumb"></div>
