@@ -55,8 +55,8 @@
 
     header nav {
       display: flex;
-      gap: 12px;
       align-items: center;
+      gap: 16px;
     }
 
     .card {
@@ -65,7 +65,7 @@
       padding: 24px;
       margin: 40px auto;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      max-width: 1200px;
+      max-width: 95vw;
       width: 95%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -108,8 +108,8 @@
     }
 
     .toggle-switch {
-      width: 48px;
-      height: 24px;
+      width: 52px;
+      height: 26px;
       background: var(--border);
       border-radius: 12px;
       position: relative;
@@ -119,7 +119,7 @@
       align-items: center;
       justify-content: flex-start;
       padding: 0;
-      gap: 0;
+      margin: 0 6px 0 0;
     }
 
     .toggle-switch::before {
@@ -153,8 +153,8 @@
     }
 
     .toggle-switch .thumb {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       background: var(--primary);
       border-radius: 50%;
       transition: transform 0.3s ease, background 0.3s ease;
@@ -162,8 +162,14 @@
     }
 
     [data-theme="light"] .toggle-switch .thumb {
-      transform: translateX(24px);
+      transform: translateX(26px);
       background: var(--accent);
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 98%;
+      }
     }
   </style>
   <script>
