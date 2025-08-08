@@ -48,7 +48,7 @@
       padding: 10px 24px;
       box-sizing: border-box;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-evenly;
       align-items: center;
       flex-wrap: nowrap;
     }
@@ -188,7 +188,7 @@
 </p>
 
 <header class="header-bar">
-  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; margin-right: auto;">PropTrend</div>
+  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; margin: 0 12px 0 0;">PropTrend</div>
   <nav class="header-actions">
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
       <div class="thumb"></div>
@@ -201,17 +201,17 @@
 </p>
 
 <!-- Chart containers -->
-<div class="card" style="display: flex; justify-content: center;">
-  <div id="chart" style="width: 95%; max-width: 1100px; height: 80vh;"></div>
+<div class="card" style="margin: 40px auto;">
+  <div id="chart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="display: flex; justify-content: center;">
-  <div id="yoyChart" style="width: 95%; max-width: 1100px; height: 80vh;"></div>
+<div class="card" style="margin: 40px auto;">
+  <div id="yoyChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="display: flex; justify-content: center;">
-  <div id="momChart" style="width: 95%; max-width: 1100px; height: 80vh;"></div>
+<div class="card" style="margin: 40px auto;">
+  <div id="momChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="display: flex; justify-content: center;">
-  <div id="cashRateChart" style="width: 95%; max-width: 1100px; height: 80vh;"></div>
+<div class="card" style="margin: 40px auto;">
+  <div id="cashRateChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
 
 <script>
