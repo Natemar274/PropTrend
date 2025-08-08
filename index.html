@@ -56,7 +56,8 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 12px;
+      margin-left: auto;
     }
 
     .card {
@@ -70,13 +71,18 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .card > div[id$="Chart"] {
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+      display: flex;
+      justify-content: center;
     }
     .header-left {
       display: flex;
       align-items: center;
       flex-grow: 1;
+      min-width: 0;
     }
 
     .header-title {
