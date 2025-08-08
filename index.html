@@ -14,24 +14,38 @@
       --bg: #111827;
       --card-bg: #1f2937;
       --text: #e5e7eb;
-      --primary: #3b82f6;
-      --accent: #2563eb;
+      --primary: #0ff;
+      --accent: #0ff;
+      --tip-text: #a5f3fc;
+      --border: #334155;
+    }
+
+    [data-theme="light"] {
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --primary: #1f77b4;
+      --accent: #155a8a;
+      --tip-text: #444;
+      --border: #e2e8f0;
     }
 
     body {
-      background: linear-gradient(to bottom, #1e293b, #111827);
+      background: var(--bg);
       font-family: 'Inter', sans-serif;
       color: var(--text);
       margin: 0;
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .card {
       background: var(--card-bg);
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 24px;
       margin: 40px auto;
       box-shadow: 0 6px 16px rgba(0,0,0,0.2);
       max-width: 95%;
+      border: 1px solid var(--border);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -68,7 +82,28 @@
       text-align: center;
       padding: 12px 0 0;
     }
+
+    #theme-toggle {
+      cursor: pointer;
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+
+    #theme-toggle:hover {
+      background: var(--primary);
+      color: black;
+    }
   </style>
+  <script>
+    // Theme toggle with persistence
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  </script>
 </head>
 <body>
 
@@ -77,12 +112,13 @@
 </p>
 
 <header style="position: sticky; top: 0; z-index: 10; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
-  <img src="PropTrend.png" alt="PropTrend logo" style="max-width: 180px; height: auto; display: block;">
+  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">PropTrend</div>
   <nav>
     <a href="about.html" class="nav-button">About</a>
+    <button id="theme-toggle">Toggle Theme</button>
   </nav>
 </header>
-<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px; color: #cbd5e1;">
+<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px; color: var(--tip-text);">
   <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
 </p>
 
@@ -97,6 +133,8 @@
   fetch('data_combined.json')
     .then(res => res.json())
     .then(data => {
+      const currentTheme = document.documentElement.dataset.theme || 'dark';
+      const isDark = currentTheme === 'dark';
       const dates = data.dates.map(d => new Date(d));
       const cities = Object.keys(data).filter(k => k !== 'dates');
       // Manual category10 palette
@@ -135,8 +173,21 @@
 
       const layout = {
         title: { text: 'Established Median House Prices – Actual & Forecast' },
-        xaxis: { title: { text: 'Date' } },
-        yaxis: { title: { text: 'Median Price (AUD)' } },
+        paper_bgcolor: isDark ? '#111827' : '#ffffff',
+        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        xaxis: {
+          title: { text: 'Date' },
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
+        yaxis: {
+          title: { text: 'Median Price (AUD)' },
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 },
         autosize: true,
@@ -153,19 +204,6 @@
           },
           xanchor: 'center',
           yanchor: 'middle'
-        }],
-        images: [{
-          source: 'PropTrend.png',
-          xref: 'paper',
-          yref: 'paper',
-          x: 1,
-          y: 0,
-          sizex: 0.2,
-          sizey: 0.2,
-          xanchor: 'right',
-          yanchor: 'bottom',
-          opacity: 0.25,
-          layer: 'below'
         }]
       };
 
@@ -187,6 +225,8 @@
   fetch('data_yoy.json')
     .then(res => res.json())
     .then(data => {
+      const currentTheme = document.documentElement.dataset.theme || 'dark';
+      const isDark = currentTheme === 'dark';
       const dates = data.map(d => d.Date);
       const cities = Object.keys(data[0]).filter(k => k !== 'Date');
       const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
@@ -200,8 +240,21 @@
 
       const layout = {
         title: { text: 'Rolling 12-Month % Change' },
-        xaxis: { title: 'Date' },
-        yaxis: { title: 'Annual % Change' },
+        paper_bgcolor: isDark ? '#111827' : '#ffffff',
+        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        xaxis: {
+          title: 'Date',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
+        yaxis: {
+          title: 'Annual % Change',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 },
         annotations: [{
@@ -217,19 +270,6 @@
           },
           xanchor: 'center',
           yanchor: 'middle'
-        }],
-        images: [{
-          source: 'PropTrend.png',
-          xref: 'paper',
-          yref: 'paper',
-          x: 1,
-          y: 0,
-          sizex: 0.2,
-          sizey: 0.2,
-          xanchor: 'right',
-          yanchor: 'bottom',
-          opacity: 0.25,
-          layer: 'below'
         }]
       };
 
@@ -244,6 +284,8 @@
   fetch('data_mom.json')
     .then(res => res.json())
     .then(data => {
+      const currentTheme = document.documentElement.dataset.theme || 'dark';
+      const isDark = currentTheme === 'dark';
       const dates = data.map(d => d.Date);
       const cities = Object.keys(data[0]).filter(k => k !== 'Date');
       const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
@@ -257,8 +299,21 @@
 
       const layout = {
         title: { text: 'Rolling Monthly % Change' },
-        xaxis: { title: 'Date' },
-        yaxis: { title: 'Monthly % Change' },
+        paper_bgcolor: isDark ? '#111827' : '#ffffff',
+        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        xaxis: {
+          title: 'Date',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
+        yaxis: {
+          title: 'Monthly % Change',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 },
         annotations: [{
@@ -274,19 +329,6 @@
           },
           xanchor: 'center',
           yanchor: 'middle'
-        }],
-        images: [{
-          source: 'PropTrend.png',
-          xref: 'paper',
-          yref: 'paper',
-          x: 1,
-          y: 0,
-          sizex: 0.2,
-          sizey: 0.2,
-          xanchor: 'right',
-          yanchor: 'bottom',
-          opacity: 0.25,
-          layer: 'below'
         }]
       };
 
@@ -301,6 +343,8 @@
   fetch('cash_rate.json')
     .then(res => res.json())
     .then(data => {
+      const currentTheme = document.documentElement.dataset.theme || 'dark';
+      const isDark = currentTheme === 'dark';
       const dates = data.map(d => d.Date);
       const rates = data.map(d => d["Cash Rate Target"]);
 
@@ -314,8 +358,21 @@
 
       const layout = {
         title: { text: 'RBA Cash Rate Over Time' },
-        xaxis: { title: 'Date' },
-        yaxis: { title: 'Cash Rate (%)' },
+        paper_bgcolor: isDark ? '#111827' : '#ffffff',
+        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+        xaxis: {
+          title: 'Date',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
+        yaxis: {
+          title: 'Cash Rate (%)',
+          gridcolor: isDark ? '#334155' : '#e2e8f0',
+          linecolor: isDark ? '#e5e7eb' : '#1f2937',
+          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+        },
         hovermode: 'x unified',
         margin: { t: 50, l: 50, r: 30, b: 50 },
         annotations: [{
@@ -331,19 +388,6 @@
           },
           xanchor: 'center',
           yanchor: 'middle'
-        }],
-        images: [{
-          source: 'PropTrend.png',
-          xref: 'paper',
-          yref: 'paper',
-          x: 1,
-          y: 0,
-          sizex: 0.2,
-          sizey: 0.2,
-          xanchor: 'right',
-          yanchor: 'bottom',
-          opacity: 0.25,
-          layer: 'below'
         }]
       };
 
@@ -351,6 +395,15 @@
 
       Plotly.newPlot('cashRateChart', [trace], layout, config);
     });
+</script>
+
+<script>
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
 </script>
 
 </body>
