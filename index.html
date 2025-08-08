@@ -48,7 +48,7 @@
       padding: 10px 24px;
       box-sizing: border-box;
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       align-items: center;
       flex-wrap: nowrap;
     }
@@ -65,8 +65,8 @@
       padding: 24px;
       margin: 40px auto;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      max-width: 95vw;
-      width: 1100px;
+      max-width: 1100px;
+      width: 100%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     #aboutModal {
@@ -188,8 +188,8 @@
 </p>
 
 <header class="header-bar">
-  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; margin: 0 12px 0 0;">PropTrend</div>
-  <nav class="header-actions">
+  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap; flex-grow: 1;">PropTrend</div>
+  <nav class="header-actions" style="gap: 12px;">
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
       <div class="thumb"></div>
     </div>
@@ -201,16 +201,16 @@
 </p>
 
 <!-- Chart containers -->
-<div class="card" style="margin: 40px auto;">
+<div class="card">
   <div id="chart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="margin: 40px auto;">
+<div class="card">
   <div id="yoyChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="margin: 40px auto;">
+<div class="card">
   <div id="momChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
-<div class="card" style="margin: 40px auto;">
+<div class="card">
   <div id="cashRateChart" style="width: 100%; max-width: 1200px; height: 80vh;"></div>
 </div>
 
