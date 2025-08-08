@@ -87,22 +87,55 @@
       height: 24px;
       background: var(--border);
       border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 2px;
+      position: relative;
       cursor: pointer;
       transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2px;
     }
 
-    .toggle-switch .icon {
+    .toggle-switch::before {
+      content: '🌙';
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .toggle-switch::after {
+      content: '☀️';
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    [data-theme="light"] .toggle-switch::before {
+      opacity: 0;
+    }
+
+    [data-theme="light"] .toggle-switch::after {
+      opacity: 1;
+    }
+
+    .toggle-switch .thumb {
       width: 20px;
       height: 20px;
       background: var(--primary);
       border-radius: 50%;
       transition: transform 0.3s ease, background 0.3s ease;
+      transform: translateX(0);
     }
 
-    [data-theme="light"] .toggle-switch .icon {
+    [data-theme="light"] .toggle-switch .thumb {
       transform: translateX(24px);
       background: var(--accent);
     }
@@ -121,11 +154,11 @@
 
 <header style="position: sticky; top: 0; z-index: 10; background: var(--card-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
   <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">PropTrend</div>
-  <nav>
-    <a href="about.html" class="nav-button">About</a>
+  <nav style="display: flex; gap: 12px; align-items: center;">
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
-      <div class="icon"></div>
+      <div class="thumb"></div>
     </div>
+    <button id="aboutBtn" class="nav-button">About</button>
   </nav>
 </header>
 <p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px; color: var(--tip-text);">
@@ -421,6 +454,37 @@
     });
     // Reload JS scripts to re-run fetches
     location.reload();
+  });
+</script>
+
+
+<div id="aboutModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:var(--card-bg); color:var(--text); max-width:600px; padding:30px; border-radius:12px; position:relative;">
+    <button id="closeAbout" style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer;">&times;</button>
+    <div id="aboutContent">Loading...</div>
+  </div>
+</div>
+
+<script>
+const aboutModal = document.getElementById('aboutModal');
+document.getElementById('aboutBtn').addEventListener('click', () => {
+  aboutModal.style.display = 'flex';
+});
+document.getElementById('closeAbout').addEventListener('click', () => {
+  aboutModal.style.display = 'none';
+});
+aboutModal.addEventListener('click', e => {
+  if (e.target === aboutModal) aboutModal.style.display = 'none';
+});
+</script>
+<script>
+fetch('about.html')
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById('aboutContent').innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById('aboutContent').innerHTML = '<p>Failed to load about content.</p>';
   });
 </script>
 
