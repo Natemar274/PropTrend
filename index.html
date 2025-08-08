@@ -38,13 +38,35 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
+    .header-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--card-bg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      width: 100%;
+      padding: 10px 24px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    header nav {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
     .card {
       background: var(--card-bg);
       border-radius: 12px;
       padding: 24px;
       margin: 40px auto;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      max-width: 95%;
+      max-width: 1200px;
+      width: 95%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -54,17 +76,20 @@
     }
 
     .nav-button {
-      padding: 8px 16px;
+      padding: 8px 14px;
       background-color: var(--primary);
       color: white;
       text-decoration: none;
       font-weight: 600;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
     .nav-button:hover {
       background-color: var(--accent);
+      transform: translateY(-1px);
     }
 
     h2 {
@@ -153,9 +178,9 @@
   Loading latest update...
 </p>
 
-<header style="position: sticky; top: 0; z-index: 10; background: var(--card-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; padding: 10px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+<header class="header-bar">
   <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">PropTrend</div>
-  <nav style="display: flex; gap: 12px; align-items: center;">
+  <nav>
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
       <div class="thumb"></div>
     </div>
