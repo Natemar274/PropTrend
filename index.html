@@ -51,12 +51,14 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      flex-wrap: wrap;
     }
 
     header nav {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 10px;
+      flex-wrap: nowrap;
     }
 
     .card {
@@ -185,7 +187,7 @@
 </p>
 
 <header class="header-bar">
-  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">PropTrend</div>
+  <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); white-space: nowrap;">PropTrend</div>
   <nav>
     <div id="theme-toggle" class="toggle-switch" title="Toggle theme">
       <div class="thumb"></div>
@@ -485,7 +487,7 @@
       if (el) Plotly.purge(el);
     });
     // Reload JS scripts to re-run fetches
-    location.reload();
+    // location.reload();
   });
 </script>
 
