@@ -14,8 +14,8 @@
       --bg: #111827;
       --card-bg: #1f2937;
       --text: #e5e7eb;
-      --primary: #0ff;
-      --accent: #0ff;
+      --primary: #60a5fa;
+      --accent: #3b82f6;
       --tip-text: #a5f3fc;
       --border: #334155;
     }
@@ -43,9 +43,8 @@
       border-radius: 12px;
       padding: 24px;
       margin: 40px auto;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       max-width: 95%;
-      border: 1px solid var(--border);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -111,7 +110,7 @@
   Loading latest update...
 </p>
 
-<header style="position: sticky; top: 0; z-index: 10; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+<header style="position: sticky; top: 0; z-index: 10; background: var(--card-bg); box-shadow: 0 2px 4px rgba(0,0,0,0.05); width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
   <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">PropTrend</div>
   <nav>
     <a href="about.html" class="nav-button">About</a>
@@ -353,7 +352,7 @@
         y: rates,
         mode: 'lines+markers',
         name: 'Cash Rate',
-        line: { width: 2, color: '#444' }
+        line: { width: 3, color: isDark ? '#60a5fa' : '#1f2937' }
       };
 
       const layout = {
@@ -403,6 +402,7 @@
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
+    location.reload();
   });
 </script>
 
