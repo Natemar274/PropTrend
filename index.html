@@ -168,9 +168,10 @@
     }
   </style>
   <script>
-    // Theme toggle with persistence
-    const theme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    // Theme toggle with persistence; default to dark theme if none set
+    const storedTheme = localStorage.getItem('theme');
+    const defaultTheme = storedTheme ? storedTheme : 'dark';
+    document.documentElement.setAttribute('data-theme', defaultTheme);
   </script>
 </head>
 <body>
@@ -211,272 +212,275 @@
 </div>
 
 <script>
-  // Load combined JSON and render Plotly chart with consistent colours and full tooltips
+  const chartDataStore = {};
+</script>
+<script>
+  // Load combined JSON and store for rendering
   fetch('data_combined.json')
     .then(res => res.json())
     .then(data => {
-      const currentTheme = document.documentElement.dataset.theme || 'dark';
-      const isDark = currentTheme === 'dark';
-      const dates = data.dates.map(d => new Date(d));
-      const cities = Object.keys(data).filter(k => k !== 'dates');
-      // Manual category10 palette
-      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
-      const traces = [];
-
-      cities.forEach((city, idx) => {
-        const vals = data[city];
-        const totalPoints = vals.length;
-        const histPoints = totalPoints - 60;
-        const color = palette[idx % palette.length];
-
-        // Historical data (solid line)
-        traces.push({
-          x: dates.slice(0, histPoints),
-          y: vals.slice(0, histPoints),
-          name: city,
-          mode: 'lines',
-          line: { dash: 'solid', width: 2, color: color },
-          legendgroup: city,
-          hoverinfo: 'x+y+name'
-        });
-
-        // Forecast data (dashed line)
-        traces.push({
-          x: dates.slice(histPoints),
-          y: vals.slice(histPoints),
-          name: city,
-          mode: 'lines',
-          line: { dash: 'dash', width: 2, color: color },
-          legendgroup: city,
-          showlegend: false,
-          hoverinfo: 'x+y+name'
-        });
-      });
-
-      const layout = {
-        title: { text: 'Established Median House Prices – Actual & Forecast' },
-        paper_bgcolor: isDark ? '#111827' : '#ffffff',
-        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
-        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
-        xaxis: {
-          title: { text: 'Date' },
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        yaxis: {
-          title: { text: 'Median Price (AUD)' },
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        hovermode: 'x unified',
-        margin: { t: 50, l: 50, r: 30, b: 50 },
-        autosize: true,
-        annotations: [{
-          text: 'PropTrend.com.au',
-          xref: 'paper',
-          yref: 'paper',
-          x: 0.5,
-          y: 0.5,
-          showarrow: false,
-          font: {
-            size: 32,
-            color: 'rgba(200,200,200,0.5)'
-          },
-          xanchor: 'center',
-          yanchor: 'middle'
-        }]
-      };
-
+      chartDataStore.main = data;
       // Use the last non-forecast (historical) data point for the "Last updated" message
       const lastDate = new Date(data.dates[data.dates.length - 61]);
       const formatted = `${lastDate.getDate().toString().padStart(2, '0')}/${(lastDate.getMonth() + 1).toString().padStart(2, '0')}/${lastDate.getFullYear()}`;
       document.getElementById('last-updated').innerHTML = `Last updated: <strong>${formatted}</strong>`;
-
-      const config = { responsive: true, displayModeBar: true };
-
-      Plotly.newPlot('chart', traces, layout, config);
+      if (typeof renderAllCharts === 'function') renderAllCharts();
     })
     .catch(err => console.error('Error loading data:', err));
 </script>
 
 
 <script>
-  // Load and render YoY chart
+  // Load and store YoY chart data
   fetch('data_yoy.json')
     .then(res => res.json())
     .then(data => {
-      const currentTheme = document.documentElement.dataset.theme || 'dark';
-      const isDark = currentTheme === 'dark';
-      const dates = data.map(d => d.Date);
-      const cities = Object.keys(data[0]).filter(k => k !== 'Date');
-      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
-      const traces = cities.map((city, idx) => ({
-        x: dates,
-        y: data.map(d => d[city]),
-        name: city,
-        mode: 'lines',
-        line: { width: 2, color: palette[idx % palette.length] }
-      }));
-
-      const layout = {
-        title: { text: 'Rolling 12-Month % Change' },
-        paper_bgcolor: isDark ? '#111827' : '#ffffff',
-        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
-        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
-        xaxis: {
-          title: 'Date',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        yaxis: {
-          title: 'Annual % Change',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        hovermode: 'x unified',
-        margin: { t: 50, l: 50, r: 30, b: 50 },
-        annotations: [{
-          text: 'PropTrend.com.au',
-          xref: 'paper',
-          yref: 'paper',
-          x: 0.5,
-          y: 0.5,
-          showarrow: false,
-          font: {
-            size: 32,
-            color: 'rgba(200,200,200,0.5)'
-          },
-          xanchor: 'center',
-          yanchor: 'middle'
-        }]
-      };
-
-      const config = { responsive: true, displayModeBar: true };
-
-      Plotly.newPlot('yoyChart', traces, layout, config);
+      chartDataStore.yoy = data;
+      if (typeof renderAllCharts === 'function') renderAllCharts();
     });
 </script>
 
 <script>
-  // Load and render MoM chart
+  // Load and store MoM chart data
   fetch('data_mom.json')
     .then(res => res.json())
     .then(data => {
-      const currentTheme = document.documentElement.dataset.theme || 'dark';
-      const isDark = currentTheme === 'dark';
-      const dates = data.map(d => d.Date);
-      const cities = Object.keys(data[0]).filter(k => k !== 'Date');
-      const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
-      const traces = cities.map((city, idx) => ({
-        x: dates,
-        y: data.map(d => d[city]),
-        name: city,
-        mode: 'lines',
-        line: { width: 2, color: palette[idx % palette.length] }
-      }));
-
-      const layout = {
-        title: { text: 'Rolling Monthly % Change' },
-        paper_bgcolor: isDark ? '#111827' : '#ffffff',
-        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
-        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
-        xaxis: {
-          title: 'Date',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        yaxis: {
-          title: 'Monthly % Change',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        hovermode: 'x unified',
-        margin: { t: 50, l: 50, r: 30, b: 50 },
-        annotations: [{
-          text: 'PropTrend.com.au',
-          xref: 'paper',
-          yref: 'paper',
-          x: 0.5,
-          y: 0.5,
-          showarrow: false,
-          font: {
-            size: 32,
-            color: 'rgba(200,200,200,0.5)'
-          },
-          xanchor: 'center',
-          yanchor: 'middle'
-        }]
-      };
-
-      const config = { responsive: true, displayModeBar: true };
-
-      Plotly.newPlot('momChart', traces, layout, config);
+      chartDataStore.mom = data;
+      if (typeof renderAllCharts === 'function') renderAllCharts();
     });
 </script>
 
 <script>
-  // Load and render Cash Rate chart
+  // Load and store Cash Rate chart data
   fetch('cash_rate.json')
     .then(res => res.json())
     .then(data => {
-      const currentTheme = document.documentElement.dataset.theme || 'dark';
-      const isDark = currentTheme === 'dark';
-      const dates = data.map(d => d.Date);
-      const rates = data.map(d => d["Cash Rate Target"]);
-
-      const trace = {
-        x: dates,
-        y: rates,
-        mode: 'lines+markers',
-        name: 'Cash Rate',
-        line: { width: 3, color: isDark ? '#60a5fa' : '#1f2937' }
-      };
-
-      const layout = {
-        title: { text: 'RBA Cash Rate Over Time' },
-        paper_bgcolor: isDark ? '#111827' : '#ffffff',
-        plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
-        font: { color: isDark ? '#e5e7eb' : '#1f2937' },
-        xaxis: {
-          title: 'Date',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        yaxis: {
-          title: 'Cash Rate (%)',
-          gridcolor: isDark ? '#334155' : '#e2e8f0',
-          linecolor: isDark ? '#e5e7eb' : '#1f2937',
-          tickcolor: isDark ? '#e5e7eb' : '#1f2937'
-        },
-        hovermode: 'x unified',
-        margin: { t: 50, l: 50, r: 30, b: 50 },
-        annotations: [{
-          text: 'PropTrend.com.au',
-          xref: 'paper',
-          yref: 'paper',
-          x: 0.5,
-          y: 0.5,
-          showarrow: false,
-          font: {
-            size: 32,
-            color: 'rgba(200,200,200,0.5)'
-          },
-          xanchor: 'center',
-          yanchor: 'middle'
-        }]
-      };
-
-      const config = { responsive: true, displayModeBar: true };
-
-      Plotly.newPlot('cashRateChart', [trace], layout, config);
+      chartDataStore.cash = data;
+      if (typeof renderAllCharts === 'function') renderAllCharts();
     });
+</script>
+
+<script>
+function renderAllCharts() {
+  const currentTheme = document.documentElement.dataset.theme || 'dark';
+  const isDark = currentTheme === 'dark';
+  const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f'];
+
+  if (chartDataStore.main) {
+    const data = chartDataStore.main;
+    const dates = data.dates.map(d => new Date(d));
+    const cities = Object.keys(data).filter(k => k !== 'dates');
+    const traces = [];
+    const histPoints = data.dates.length - 60;
+
+    cities.forEach((city, idx) => {
+      const vals = data[city];
+      const color = palette[idx % palette.length];
+
+      traces.push({
+        x: dates.slice(0, histPoints),
+        y: vals.slice(0, histPoints),
+        name: city,
+        mode: 'lines',
+        line: { dash: 'solid', width: 2, color },
+        legendgroup: city,
+        hoverinfo: 'x+y+name'
+      });
+
+      traces.push({
+        x: dates.slice(histPoints),
+        y: vals.slice(histPoints),
+        name: city,
+        mode: 'lines',
+        line: { dash: 'dash', width: 2, color },
+        legendgroup: city,
+        showlegend: false,
+        hoverinfo: 'x+y+name'
+      });
+    });
+
+    const layout = {
+      title: { text: 'Established Median House Prices – Actual & Forecast' },
+      paper_bgcolor: isDark ? '#111827' : '#ffffff',
+      plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+      font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+      xaxis: {
+        title: { text: 'Date' },
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      yaxis: {
+        title: { text: 'Median Price (AUD)' },
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      hovermode: 'x unified',
+      margin: { t: 50, l: 50, r: 30, b: 50 },
+      autosize: true,
+      annotations: [{
+        text: 'PropTrend.com.au',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+          size: 32,
+          color: 'rgba(200,200,200,0.5)'
+        },
+        xanchor: 'center',
+        yanchor: 'middle'
+      }]
+    };
+    Plotly.newPlot('chart', traces, layout, { responsive: true });
+  }
+
+  if (chartDataStore.yoy) {
+    const data = chartDataStore.yoy;
+    const dates = data.map(d => d.Date);
+    const cities = Object.keys(data[0]).filter(k => k !== 'Date');
+    const traces = cities.map((city, idx) => ({
+      x: dates,
+      y: data.map(d => d[city]),
+      name: city,
+      mode: 'lines',
+      line: { width: 2, color: palette[idx % palette.length] }
+    }));
+    const layout = {
+      title: { text: 'Rolling 12-Month % Change' },
+      paper_bgcolor: isDark ? '#111827' : '#ffffff',
+      plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+      font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+      xaxis: {
+        title: 'Date',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      yaxis: {
+        title: 'Annual % Change',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      hovermode: 'x unified',
+      margin: { t: 50, l: 50, r: 30, b: 50 },
+      annotations: [{
+        text: 'PropTrend.com.au',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+          size: 32,
+          color: 'rgba(200,200,200,0.5)'
+        },
+        xanchor: 'center',
+        yanchor: 'middle'
+      }]
+    };
+    Plotly.newPlot('yoyChart', traces, layout, { responsive: true });
+  }
+
+  if (chartDataStore.mom) {
+    const data = chartDataStore.mom;
+    const dates = data.map(d => d.Date);
+    const cities = Object.keys(data[0]).filter(k => k !== 'Date');
+    const traces = cities.map((city, idx) => ({
+      x: dates,
+      y: data.map(d => d[city]),
+      name: city,
+      mode: 'lines',
+      line: { width: 2, color: palette[idx % palette.length] }
+    }));
+    const layout = {
+      title: { text: 'Rolling Monthly % Change' },
+      paper_bgcolor: isDark ? '#111827' : '#ffffff',
+      plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+      font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+      xaxis: {
+        title: 'Date',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      yaxis: {
+        title: 'Monthly % Change',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      hovermode: 'x unified',
+      margin: { t: 50, l: 50, r: 30, b: 50 },
+      annotations: [{
+        text: 'PropTrend.com.au',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+          size: 32,
+          color: 'rgba(200,200,200,0.5)'
+        },
+        xanchor: 'center',
+        yanchor: 'middle'
+      }]
+    };
+    Plotly.newPlot('momChart', traces, layout, { responsive: true });
+  }
+
+  if (chartDataStore.cash) {
+    const data = chartDataStore.cash;
+    const dates = data.map(d => d.Date);
+    const rates = data.map(d => d["Cash Rate Target"]);
+    const trace = {
+      x: dates,
+      y: rates,
+      mode: 'lines+markers',
+      name: 'Cash Rate',
+      line: { width: 3, color: isDark ? '#60a5fa' : '#1f2937' }
+    };
+    const layout = {
+      title: { text: 'RBA Cash Rate Over Time' },
+      paper_bgcolor: isDark ? '#111827' : '#ffffff',
+      plot_bgcolor: isDark ? '#1f2937' : '#f9fafb',
+      font: { color: isDark ? '#e5e7eb' : '#1f2937' },
+      xaxis: {
+        title: 'Date',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      yaxis: {
+        title: 'Cash Rate (%)',
+        gridcolor: isDark ? '#334155' : '#e2e8f0',
+        linecolor: isDark ? '#e5e7eb' : '#1f2937',
+        tickcolor: isDark ? '#e5e7eb' : '#1f2937'
+      },
+      hovermode: 'x unified',
+      margin: { t: 50, l: 50, r: 30, b: 50 },
+      annotations: [{
+        text: 'PropTrend.com.au',
+        xref: 'paper',
+        yref: 'paper',
+        x: 0.5,
+        y: 0.5,
+        showarrow: false,
+        font: {
+          size: 32,
+          color: 'rgba(200,200,200,0.5)'
+        },
+        xanchor: 'center',
+        yanchor: 'middle'
+      }]
+    };
+    Plotly.newPlot('cashRateChart', [trace], layout, { responsive: true });
+  }
+}
 </script>
 
 <script>
@@ -491,6 +495,7 @@
       const el = document.getElementById(id);
       if (el) Plotly.purge(el);
     });
+    setTimeout(renderAllCharts, 10);
     // Reload JS scripts to re-run fetches
     // location.reload();
   });
