@@ -48,7 +48,7 @@
       padding: 10px 24px;
       box-sizing: border-box;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       align-items: center;
       flex-wrap: nowrap;
     }
@@ -56,7 +56,7 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 18px;
     }
 
     .card {
@@ -65,7 +65,7 @@
       padding: 24px;
       margin: 40px auto;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      max-width: 1100px;
+      max-width: 1300px;
       width: 100%;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -75,7 +75,7 @@
 
     .card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
     }
 
     .nav-button {
@@ -111,8 +111,8 @@
     }
 
     .toggle-switch {
-      width: 52px;
-      height: 26px;
+      width: 60px;
+      height: 30px;
       background: var(--border);
       border-radius: 12px;
       position: relative;
@@ -121,7 +121,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      padding: 0;
+      padding: 0 4px;
       margin: 0 6px 0 0;
     }
 
@@ -131,7 +131,7 @@
       left: 4px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 14px;
+      font-size: 16px;
       opacity: 1;
       transition: opacity 0.3s ease;
     }
@@ -142,7 +142,7 @@
       right: 4px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 14px;
+      font-size: 16px;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -196,7 +196,7 @@
     <button id="aboutBtn" class="nav-button">About</button>
   </nav>
 </header>
-<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 30px; color: var(--tip-text);">
+<p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 12px; color: var(--tip-text);">
   <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
 </p>
 
