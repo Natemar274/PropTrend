@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,188 +10,92 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
   <style>
-    :root {
-      --bg: #111827;
-      --card-bg: #1f2937;
-      --text: #e5e7eb;
-      --primary: #60a5fa;
-      --accent: #3b82f6;
-      --tip-text: #a5f3fc;
-      --border: #334155;
+    /* ===== THEME SYSTEM (dark default) ===== */
+    :root{
+      --bg:#0b1220; --card-bg:#111a2e; --text:#e7eefc; --primary:#8cd4ff; --accent:#0c64ff; --tip-text:#9fb0cf; --border:#1a2744;
+    }
+    [data-theme="light"]{
+      --bg:#f7f9ff; --card-bg:#ffffff; --text:#0b1220; --primary:#0c64ff; --accent:#1f77b4; --tip-text:#4a5d82; --border:#dbe3f7;
     }
 
-    [data-theme="light"] {
-      --bg: #f9fafb;
-      --card-bg: #ffffff;
-      --text: #1f2937;
-      --primary: #1f77b4;
-      --accent: #155a8a;
-      --tip-text: #444;
-      --border: #e2e8f0;
-    }
+    *{box-sizing:border-box}
+    body{background:var(--bg); font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text); margin:0; transition:background .25s ease,color .25s ease}
 
-    body {
-      background: var(--bg);
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      margin: 0;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
+    /* Particle canvas */
+    .particles{position:fixed; inset:0; z-index:0; pointer-events:none}
 
-    .header-bar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--card-bg);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      width: 100%;
-      padding: 10px 24px;
-      box-sizing: border-box;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-    }
+    /* Header */
+    header{position:sticky; top:0; z-index:2; padding:12px 16px; border-bottom:1px solid var(--border); background:linear-gradient(180deg, color-mix(in oklab, var(--card-bg) 88%, transparent), var(--bg)); backdrop-filter:saturate(120%) blur(6px)}
+    .header-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .header-title{font-size:1.25rem; font-weight:700; color:var(--primary); white-space:nowrap}
+    .toolbar{display:flex; gap:10px; align-items:center}
+    .spacer{flex:1}
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0;
-    }
+    /* Buttons */
+    .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; background:color-mix(in oklab, var(--card-bg) 88%, var(--bg)); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:10px 12px; cursor:pointer; text-decoration:none; font-weight:600; transition:filter .15s, transform .04s ease}
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:color-mix(in oklab, var(--primary) 28%, var(--card-bg))}
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 40px auto;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      max-width: 95vw;
-      width: 95%;
-      height: 80vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-    }
+    /* Theme switch */
+    .tog{display:inline-flex; gap:8px; align-items:center}
+    .kbd{padding:2px 6px; border:1px solid var(--border); border-radius:4px; background:color-mix(in oklab, var(--card-bg) 80%, var(--bg)); font-size:12px; color:var(--tip-text)}
+    .switch{position:relative; width:46px; height:26px; border-radius:999px; background:color-mix(in oklab, var(--card-bg) 80%, var(--bg)); border:1px solid var(--border)}
+    .thumb{position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:var(--text); transition:left .2s}
+    [data-theme="light"] .thumb{left:22px}
 
-    .header-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      white-space: nowrap;
-    }
-    #aboutModal {
-      overflow-y: auto;
-    }
+    /* Cards */
+    .card{background:var(--card-bg); border-radius:12px; padding:24px; margin:40px auto; box-shadow:0 8px 24px rgba(0,0,0,.25); max-width:95vw; width:95%; height:80vh; display:flex; justify-content:center; align-items:center; transition:transform .2s ease, box-shadow .2s ease}
+    .card:hover{transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.35)}
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
-    }
+    h2{font-size:1.5rem; font-weight:600; text-align:center; margin-top:30px}
+    #last-updated{font-size:.8rem; color:var(--tip-text); text-align:center; padding:12px 0 0}
 
-    .nav-button {
-      padding: 8px 14px;
-      background-color: var(--primary);
-      color: white;
-      text-decoration: none;
-      font-weight: 600;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.9rem;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .nav-button:hover {
-      background-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      font-family: inherit;
-      text-align: center;
-      margin-top: 30px;
-    }
-
-    #last-updated {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      text-align: center;
-      padding: 12px 0 0;
-    }
-
-    .theme-toggle {
-      position: relative;
-      width: 60px;
-      height: 30px;
-      background: var(--border);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6px;
-    }
-    .theme-toggle .thumb {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: var(--primary);
-      transition: transform 0.3s ease;
-    }
-    [data-theme="light"] .theme-toggle .thumb {
-      transform: translateX(30px);
-      background: var(--accent);
-    }
-    .theme-toggle .icon {
-      font-size: 14px;
-      z-index: 2;
-    }
-    #aboutModal > div {
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    @media (max-width: 768px) {
-      .card {
-        width: 98%;
-      }
-    }
+    /* Plotly backgrounds */
+    .plot-paper-dark{background-color:#0b1220}
   </style>
   <script>
-    // Theme toggle with persistence; default to dark theme if none set
-    const storedTheme = localStorage.getItem('theme');
-    const defaultTheme = storedTheme ? storedTheme : 'dark';
-    document.documentElement.setAttribute('data-theme', defaultTheme);
+    (function(){
+      const key='pt-theme';
+      const saved=localStorage.getItem(key);
+      document.documentElement.setAttribute('data-theme', (saved==='light'||saved==='dark')?saved:'dark');
+      addEventListener('DOMContentLoaded', ()=>{
+        const sw=document.getElementById('themeSwitch');
+        if(!sw) return;
+        const apply=mode=>{ document.documentElement.setAttribute('data-theme', mode); localStorage.setItem(key, mode); };
+        sw.addEventListener('click', ()=>{
+          const next = (document.documentElement.getAttribute('data-theme')==='dark')?'light':'dark';
+          apply(next);
+          // Re-render charts under new theme
+          ['chart','yoyChart','momChart','cashRateChart'].forEach(id=>{ const el=document.getElementById(id); if(el && window.Plotly){ Plotly.purge(el);} });
+          if(typeof renderAllCharts==='function') setTimeout(renderAllCharts, 10);
+        });
+      });
+    })();
   </script>
 </head>
 <body>
+<canvas id="particles" class="particles"></canvas>
 
 <p id="last-updated" style="text-align: center; font-size: 0.95rem; padding: 12px 0 0;">
   Loading latest update...
 </p>
 
-<header class="header-bar">
-  <div class="header-left">
+<header>
+  <div class="header-row">
     <div class="header-title">PropTrend</div>
+    <div class="toolbar">
+      <a href="index.html" class="btn primary">Home</a>
+      <a href="simulator.html" class="btn">Simulator</a>
+      <a href="about.html" class="btn">About</a>
+      <div class="spacer"></div>
+      <div class="tog" title="Theme">
+        <span class="kbd">Dark</span>
+        <div id="themeSwitch" class="switch"><div class="thumb"></div></div>
+        <span class="kbd">Light</span>
+      </div>
+    </div>
   </div>
-  <nav class="header-actions">
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
-      <span class="icon moon">🌙</span>
-      <div class="thumb"></div>
-      <span class="icon sun">☀️</span>
-    </button>
-    <button id="aboutBtn" class="nav-button">About</button>
-  </nav>
 </header>
 <p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 12px auto 12px; color: var(--tip-text);">
   <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
@@ -210,6 +114,22 @@
 <div class="card">
   <div id="cashRateChart" style="width: 100%; height: 100%;"></div>
 </div>
+
+<script>
+(function(){
+  const cvs=document.getElementById('particles');
+  if(!cvs) return;
+  const ctx=cvs.getContext('2d'); let W=0,H=0, frame=0; const N=140; const parts=[];
+  function resize(){ W=cvs.width=innerWidth*devicePixelRatio; H=cvs.height=innerHeight*devicePixelRatio; }
+  addEventListener('resize', resize, {passive:true}); resize();
+  for(let i=0;i<N;i++) parts.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.8+0.4, vx:(Math.random()-0.5)*0.05*devicePixelRatio, vy:(Math.random()-0.5)*0.05*devicePixelRatio, a:Math.random()*360 });
+  function step(){ frame++; ctx.clearRect(0,0,W,H); ctx.globalAlpha=0.85; ctx.fillStyle='#ffffff';
+    for(const p of parts){ p.x+=p.vx; p.y+=p.vy; if(p.x<0)p.x+=W; if(p.x>W)p.x-=W; if(p.y<0)p.y+=H; if(p.y>H)p.y-=H; const t=0.75+0.25*Math.sin((frame+p.a)*0.02); ctx.beginPath(); ctx.arc(p.x,p.y,p.r*t,0,Math.PI*2); ctx.fill(); }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
 
 <script>
   const chartDataStore = {};
@@ -481,62 +401,6 @@ function renderAllCharts() {
     Plotly.newPlot('cashRateChart', [trace], layout, { responsive: true });
   }
 }
-</script>
-
-<script>
-  const toggle = document.getElementById('theme-toggle');
-  toggle.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    // Re-render charts
-    ['chart', 'yoyChart', 'momChart', 'cashRateChart'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) Plotly.purge(el);
-    });
-    setTimeout(renderAllCharts, 10);
-    // Reload JS scripts to re-run fetches
-    // location.reload();
-  });
-</script>
-
-
-<div id="aboutModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-  <div style="background:var(--card-bg); color:var(--text); max-width:600px; padding:30px; border-radius:12px; position:relative;">
-    <button id="closeAbout" style="position:absolute; top:12px; right:12px; background:none; border:none; font-size:1.5rem; color:var(--text); cursor:pointer;">&times;</button>
-    <div id="aboutContent">Loading...</div>
-  </div>
-</div>
-
-<script>
-const aboutModal = document.getElementById('aboutModal');
-document.getElementById('aboutBtn').addEventListener('click', () => {
-  aboutModal.style.display = 'flex';
-});
-document.getElementById('closeAbout').addEventListener('click', () => {
-  aboutModal.style.display = 'none';
-});
-aboutModal.addEventListener('click', e => {
-  if (e.target === aboutModal) aboutModal.style.display = 'none';
-});
-</script>
-<script>
-fetch('about.html')
-  .then(res => res.text())
-  .then(html => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const content = doc.querySelector('body');
-    if (content) {
-      document.getElementById('aboutContent').innerHTML = content.innerHTML;
-    } else {
-      document.getElementById('aboutContent').innerHTML = '<p>Failed to load content.</p>';
-    }
-  })
-  .catch(err => {
-    document.getElementById('aboutContent').innerHTML = '<p>Failed to load about content.</p>';
-  });
 </script>
 
 </body>

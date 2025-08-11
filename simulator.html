@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PropTrend – Market Simulator</title>
+  <style>
+    /* ===== THEME SYSTEM (dark default) ===== */
+    :root{
+      --bg:#0b1220; --panel:#111a2e; --ink:#e7eefc; --muted:#9fb0cf; --accent:#8cd4ff;
+      --good:#3bd671; --warn:#f5c84b; --bad:#ff6a6a; --border:#1a2744;
+    }
+    html[data-theme="light"]{
+      --bg:#f7f9ff; --panel:#ffffff; --ink:#0b1220; --muted:#4a5d82; --accent:#0c64ff;
+      --good:#0aa35c; --warn:#a97700; --bad:#c43d3d; --border:#dbe3f7;
+    }
+
+    /* ===== Base layout ===== */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .particles{position:fixed; inset:0; z-index:0; pointer-events:none;}
+
+    header{position:sticky; top:0; z-index:2; padding:12px 16px; border-bottom:1px solid var(--border); background:linear-gradient(180deg, color-mix(in oklab, var(--panel) 88%, transparent), var(--bg)); backdrop-filter:saturate(120%) blur(6px)}
+    .header-row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    h1{font-size:16px; margin:0}
+
+    .wrap{position:relative; z-index:1; display:grid; grid-template-columns:320px 1fr; gap:14px; height:calc(100% - 52px)}
+    aside{background:var(--panel); padding:14px; overflow:auto; border-right:1px solid var(--border)}
+    main{display:grid; grid-template-rows:auto 1fr; gap:10px; padding:14px}
+
+    .row{display:grid; gap:8px; margin-bottom:10px}
+    .row.two{grid-template-columns:1fr 1fr}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px}
+    select,input[type="range"],button{width:100%}
+    input[type="range"]{accent-color:var(--accent)}
+    .val{font-variant-numeric:tabular-nums; color:var(--accent)}
+    .kbd{padding:2px 6px; border:1px solid var(--border); border-radius:4px; background:color-mix(in oklab, var(--panel) 80%, var(--bg)); font-size:12px; color:var(--muted)}
+
+    .bar{display:flex; gap:8px; align-items:center}
+
+    .btn{display:inline-flex; align-items:center; justify-content:center; gap:6px; background:color-mix(in oklab, var(--panel) 88%, var(--bg)); color:var(--ink); border:1px solid var(--border); border-radius:8px; padding:10px 12px; cursor:pointer; text-decoration:none; transition:filter .15s, transform .04s ease}
+    .btn:hover{filter:brightness(1.08)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:color-mix(in oklab, var(--accent) 28%, var(--panel))}
+
+    .toolbar{display:flex; gap:10px}
+
+    canvas.chart{background:radial-gradient(1200px 800px at 20% -10%, color-mix(in oklab, var(--panel) 86%, transparent) 8%, transparent 60%), linear-gradient(180deg, color-mix(in oklab, var(--panel) 94%, var(--bg)), var(--bg)); border:1px solid var(--border); border-radius:10px}
+
+    footer{font-size:12px; color:var(--muted)}
+    .spacer{flex:1}
+    .tog{display:inline-flex; gap:8px; align-items:center}
+    .switch{position:relative; width:46px; height:26px; border-radius:999px; background:color-mix(in oklab, var(--panel) 80%, var(--bg)); border:1px solid var(--border)}
+    .thumb{position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:var(--ink); transition:left .2s}
+    html[data-theme="light"] .thumb{left:22px}
+  </style>
+</head>
+<body>
+  <canvas id="particles" class="particles"></canvas>
+  <header>
+    <div class="header-row">
+      <h1>PropTrend – Market Simulator</h1>
+      <div class="toolbar">
+        <a href="index.html" class="btn">Home</a>
+        <a href="about.html" class="btn">About</a>
+        <a href="simulator.html" class="btn primary">Simulator</a>
+        <div class="spacer"></div>
+        <div class="tog" title="Theme">
+          <span class="kbd">Dark</span>
+          <div id="themeSwitch" class="switch"><div class="thumb"></div></div>
+          <span class="kbd">Light</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <aside>
+      <div class="row">
+        <label>Data status</label>
+        <div id="status" class="kbd">Loading…</div>
+      </div>
+
+      <div class="row">
+        <label>City / Region</label>
+        <select id="city"></select>
+      </div>
+
+      <div class="row">
+        <label>Projection horizon: <span id="hYears" class="val">10</span> years</label>
+        <input id="horizon" type="range" min="1" max="15" value="10" />
+      </div>
+
+      <div class="row">
+        <label>Baseline nominal growth: <span id="gBase" class="val">3.0%</span> p.a.</label>
+        <input id="growth" type="range" min="-5" max="15" step="0.1" value="3" />
+      </div>
+
+      <div class="row">
+        <label>Cash‑rate sensitivity: <span id="gBeta" class="val">−1.0%/pp</span></label>
+        <input id="beta" type="range" min="-5" max="5" step="0.1" value="-1" />
+      </div>
+
+      <div class="row two">
+        <div>
+          <label>Future cash rate (flat): <span id="rFut" class="val">3.85%</span></label>
+          <input id="rateFut" type="range" min="0" max="10" step="0.05" value="3.85" />
+        </div>
+        <div>
+          <label>Inflation uplift: <span id="pi" class="val">0.0%</span></label>
+          <input id="infl" type="range" min="-3" max="6" step="0.1" value="0" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="bar">
+          <button id="play" class="btn">▶️ Play</button>
+          <button id="reset" class="btn">↺ Reset</button>
+        </div>
+      </div>
+
+      <footer>
+        <div>Reads the following files from this folder:</div>
+        <div class="kbd">Price Dataset.csv</div>
+        <div class="kbd">Cash Rate Target.csv</div>
+        <div style="margin-top:6px;color:var(--warn)">Tip: open this folder with a local server (e.g. <span class="kbd">python -m http.server</span>) so <code>fetch()</code> can read the CSVs.</div>
+      </footer>
+    </aside>
+
+    <main>
+      <div class="bar">
+        <div class="kbd" id="meta">—</div>
+      </div>
+      <canvas id="chart" class="chart" width="1400" height="640"></canvas>
+    </main>
+  </div>
+
+<script>
+// ===== Theme toggle (persist to localStorage) =====
+(function(){
+  const key='pt-theme';
+  const root=document.documentElement; const saved=localStorage.getItem(key);
+  if(saved==='light' || saved==='dark'){ root.setAttribute('data-theme', saved); }
+  const sw=document.getElementById('themeSwitch');
+  const apply=mode=>{ root.setAttribute('data-theme', mode); localStorage.setItem(key, mode); };
+  sw.addEventListener('click', ()=>{
+    apply(root.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
+  });
+})();
+
+// ===== Particle backdrop (lightweight) =====
+(function(){
+  const cvs=document.getElementById('particles');
+  const ctx=cvs.getContext('2d');
+  let W=0,H=0, frame=0;
+  const N=140; // particles
+  const parts=[];
+  function resize(){ W=cvs.width=innerWidth*devicePixelRatio; H=cvs.height=innerHeight*devicePixelRatio; }
+  addEventListener('resize', resize, {passive:true}); resize();
+  for(let i=0;i<N;i++) parts.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.8+0.4, vx:(Math.random()-0.5)*0.05*devicePixelRatio, vy:(Math.random()-0.5)*0.05*devicePixelRatio, a:Math.random()*360 });
+  function step(){
+    frame++;
+    ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha=0.85; ctx.fillStyle='#ffffff';
+    for(const p of parts){
+      p.x+=p.vx; p.y+=p.vy; if(p.x<0) p.x+=W; if(p.x>W) p.x-=W; if(p.y<0) p.y+=H; if(p.y>H) p.y-=H;
+      const twinkle = 0.75 + 0.25*Math.sin((frame+p.a)*0.02);
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r*twinkle, 0, Math.PI*2); ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+
+// ===== CSV parsing & simulator logic =====
+function parseCSV(text){
+  const rows=[]; let i=0, field=''; let row=[]; let inQ=false;
+  function pushField(){ row.push(field); field=''; }
+  function pushRow(){ rows.push(row); row=[]; }
+  while(i<text.length){
+    const c=text[i++];
+    if(inQ){ if(c==='"'){ if(text[i]==='"'){ field+='"'; i++; } else { inQ=false; } } else { field+=c; } }
+    else { if(c==='\n'){ pushField(); pushRow(); } else if(c==='\r'){} else if(c===','){ pushField(); } else if(c==='"'){ inQ=true; } else { field+=c; } }
+  }
+  if(field.length || row.length) { pushField(); pushRow(); }
+  const headers = rows.shift().map(h=>h.trim());
+  return rows.filter(r=>r.length && r.some(x=>x!==''))
+             .map(r=>Object.fromEntries(headers.map((h,idx)=>[h, r[idx]??''])));
+}
+function toYM(d){ const dt=new Date(d); if(!isFinite(dt)){ const m=String(d).match(/^(\d{4})[-\/]?(\d{1,2})/); if(m){ return `${m[1]}-${m[2].padStart(2,'0')}`;} return String(d);} return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; }
+function numberify(obj, skip){ const out={}; for(const k in obj){ if(skip.has(k)){ out[k]=obj[k]; continue;} const v=parseFloat(String(obj[k]).replace(/[,\s]/g,'')); out[k]=isFinite(v)?v:null;} return out; }
+async function loadCSV(name){ const res=await fetch(encodeURI(name)); if(!res.ok) throw new Error(`Failed to load ${name}: ${res.status}`); return parseCSV(await res.text()); }
+function computeSeries(prices, rates){
+  const pRows=prices.map(r=>numberify(r,new Set(['Date']))).map(r=>({...r,Date:toYM(r.Date)}));
+  const rKey=Object.keys(rates[0]).find(k=>k.toLowerCase().includes('cash')||k.toLowerCase().includes('rate'));
+  const rRows=rates.map(r=>({Date:toYM(r.Date),rate:parseFloat(String(r[rKey]).replace(/[,\s]/g,''))})).filter(r=>isFinite(r.rate));
+  const cities=Object.keys(pRows[0]).filter(k=>k!=='Date');
+  const rateByDate=new Map(rRows.map(r=>[r.Date,r.rate]));
+  let lastRate=null; const dates=[...new Set(pRows.map(r=>r.Date))].sort();
+  const cash=dates.map(d=>{ if(rateByDate.has(d)) lastRate=rateByDate.get(d); return lastRate; });
+  return { dates, cities, prices:pRows, cash, lastRate:lastRate??null };
+}
+function drawChart(ctx, series, city, proj){
+  const W=ctx.canvas.width, H=ctx.canvas.height, P=50;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1; for(let i=0;i<10;i++){ const y=P+(H-2*P)*i/9; ctx.beginPath(); ctx.moveTo(P,y); ctx.lineTo(W-P,y); ctx.stroke(); }
+  const hist=series.prices.map(r=>r[city]).filter(v=>v!=null); const all=hist.concat((proj?.values)||[]);
+  const min=Math.min(...all)*0.9, max=Math.max(...all)*1.1; const x=t=>P+(W-2*P)*t, y=v=>H-P-(H-2*P)*((v-min)/(max-min));
+  ctx.strokeStyle='rgba(140,212,255,0.95)'; ctx.lineWidth=2; ctx.beginPath();
+  series.prices.forEach((r,i)=>{ const v=r[city]; if(v==null) return; const t=i/(series.prices.length-1); const X=x(t), Y=y(v); if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y); }); ctx.stroke();
+  if(proj){ ctx.strokeStyle='rgba(245,200,75,0.95)'; ctx.lineWidth=2.5; ctx.beginPath(); const nH=series.prices.length; proj.values.forEach((v,i)=>{ const t=(nH-1+i)/(nH-1+proj.values.length); const X=x(t), Y=y(v); if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y); }); ctx.stroke(); }
+  ctx.fillStyle='rgba(231,238,252,0.92)'; ctx.font='12px system-ui'; ctx.fillText(city, P+6, P+16);
+}
+function buildProjection(series, city, o){
+  const months=Math.round(o.years*12); const last=series.prices[series.prices.length-1][city]; const currRate=series.lastRate??o.futureRate; const rateGap=(o.futureRate-currRate); const g=(o.baseGrowth+o.infl+o.betaRate*(-rateGap)); const g_m=Math.pow(1+g/100,1/12)-1; const N=Math.min(months, Math.floor(o.frame/(o.fps*0.5))+1); const values=[]; let v=last; for(let i=0;i<N;i++){ v*=1+g_m; values.push(v);} return {values,g,months}; }
+
+(async function init(){
+  const status=document.getElementById('status'); const citySel=document.getElementById('city'); const meta=document.getElementById('meta'); const ctx=document.getElementById('chart').getContext('2d');
+  const elH=document.getElementById('horizon'); const elG=document.getElementById('growth'); const elB=document.getElementById('beta'); const elR=document.getElementById('rateFut'); const elPi=document.getElementById('infl');
+  const lblH=document.getElementById('hYears'); const lblG=document.getElementById('gBase'); const lblB=document.getElementById('gBeta'); const lblR=document.getElementById('rFut'); const lblPi=document.getElementById('pi');
+  const btnPlay=document.getElementById('play'); const btnReset=document.getElementById('reset');
+  try{
+    const [p,r]=await Promise.all([ loadCSV('Price Dataset.csv'), loadCSV('Cash Rate Target.csv') ]);
+    const series=computeSeries(p,r);
+    status.textContent=`Loaded ${series.dates.length} months, ${series.cities.length} markets`;
+    series.cities.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; citySel.appendChild(o); });
+    citySel.value=series.cities.includes('Brisbane')?'Brisbane':series.cities[0];
+    let anim=null, frame=0, fps=60;
+    function refresh(){
+      lblH.textContent=elH.value; lblG.textContent=`${(+elG.value).toFixed(1)}%`; lblB.textContent=`${(+elB.value).toFixed(1)}%/pp`; lblR.textContent=`${(+elR.value).toFixed(2)}%`; lblPi.textContent=`${(+elPi.value).toFixed(1)}%`;
+      const proj=buildProjection(series, citySel.value, {years:+elH.value, baseGrowth:+elG.value, betaRate:+elB.value, futureRate:+elR.value, infl:+elPi.value, fps, frame});
+      meta.textContent=`${citySel.value} · last: $${series.prices[series.prices.length-1][citySel.value].toLocaleString()} · proj g: ${proj.g.toFixed(2)}% p.a.`;
+      drawChart(ctx, series, citySel.value, proj);
+    }
+    function step(){ frame++; refresh(); anim=requestAnimationFrame(step); }
+    btnPlay.addEventListener('click', ()=>{ if(anim){ cancelAnimationFrame(anim); anim=null; btnPlay.textContent='▶️ Play'; } else { anim=requestAnimationFrame(step); btnPlay.textContent='⏸ Pause'; } });
+    btnReset.addEventListener('click', ()=>{ frame=0; if(anim){ cancelAnimationFrame(anim); anim=null; btnPlay.textContent='▶️ Play'; } refresh(); });
+    ;[citySel, elH, elG, elB, elR, elPi].forEach(el=> el.addEventListener('input', refresh));
+    refresh();
+  }catch(err){ status.textContent='Error: '+err.message+' — ensure this file is served over http(s) and the CSVs are in the same folder.'; console.error(err); }
+})();
+</script>
+</body>
+</html>
