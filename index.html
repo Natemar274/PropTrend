@@ -116,15 +116,52 @@
 </div>
 
 <script>
+// ===== Particle backdrop (network style) =====
 (function(){
   const cvs=document.getElementById('particles');
   if(!cvs) return;
-  const ctx=cvs.getContext('2d'); let W=0,H=0, frame=0; const N=140; const parts=[];
-  function resize(){ W=cvs.width=innerWidth*devicePixelRatio; H=cvs.height=innerHeight*devicePixelRatio; }
-  addEventListener('resize', resize, {passive:true}); resize();
-  for(let i=0;i<N;i++) parts.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.8+0.4, vx:(Math.random()-0.5)*0.05*devicePixelRatio, vy:(Math.random()-0.5)*0.05*devicePixelRatio, a:Math.random()*360 });
-  function step(){ frame++; ctx.clearRect(0,0,W,H); ctx.globalAlpha=0.85; ctx.fillStyle='#ffffff';
-    for(const p of parts){ p.x+=p.vx; p.y+=p.vy; if(p.x<0)p.x+=W; if(p.x>W)p.x-=W; if(p.y<0)p.y+=H; if(p.y>H)p.y-=H; const t=0.75+0.25*Math.sin((frame+p.a)*0.02); ctx.beginPath(); ctx.arc(p.x,p.y,p.r*t,0,Math.PI*2); ctx.fill(); }
+  const ctx=cvs.getContext('2d');
+  let W=innerWidth, H=innerHeight, dpr=window.devicePixelRatio||1;
+  function resize(){
+    W=innerWidth; H=innerHeight; dpr=window.devicePixelRatio||1;
+    cvs.width=W*dpr; cvs.height=H*dpr; cvs.style.width=W+'px'; cvs.style.height=H+'px';
+    ctx.setTransform(1,0,0,1,0,0); ctx.scale(dpr,dpr);
+  }
+  addEventListener('resize', resize, {passive:true});
+  resize();
+  const N=Math.floor(Math.max(60, W*H/9000));
+  const parts=Array.from({length:N}, ()=>({
+    x:Math.random()*W, y:Math.random()*H,
+    vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25,
+    r:1.0+Math.random()*1.2
+  }));
+  function css(name, fallback){
+    const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v||fallback;
+  }
+  function step(){
+    ctx.clearRect(0,0,W,H);
+    // lines
+    for(let i=0;i<N;i++){
+      for(let j=i+1;j<N;j++){
+        const a=parts[i], b=parts[j];
+        const dx=a.x-b.x, dy=a.y-b.y; const dist=Math.hypot(dx,dy);
+        if(dist<90){
+          ctx.save();
+          ctx.globalAlpha=0.11*(1-dist/90);
+          ctx.strokeStyle=css('--accent','#8cd4ff');
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
+    // dots
+    for(const p of parts){
+      ctx.save(); ctx.globalAlpha=0.72;
+      ctx.fillStyle=css('--primary','#8cd4ff');
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+      p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W) p.vx*=-1; if(p.y<0||p.y>H) p.vy*=-1;
+    }
     requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
