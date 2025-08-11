@@ -1,66 +1,359 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About – PropTrend</title>
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 700px;
-      margin: 40px auto 20px;
-      padding: 0 20px;
-      line-height: 1.6;
+    :root {
+      --color-bg-dark: #181b20;
+      --color-bg-light: #f8f9fb;
+      --color-card-dark: #23262b;
+      --color-card-light: #fff;
+      --color-text-dark: #e4e6eb;
+      --color-text-light: #23262b;
+      --color-accent: #4f90ff;
+      --color-accent2: #ffd24a;
+      --color-border: #34373e;
+      --color-header: #15171b;
+      --header-height: 64px;
+      --transition: background 0.3s, color 0.3s;
+      color-scheme: dark light;
     }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+    html[data-theme="dark"] {
+      --color-bg: var(--color-bg-dark);
+      --color-card: var(--color-card-dark);
+      --color-text: var(--color-text-dark);
+    }
+    html[data-theme="light"] {
+      --color-bg: var(--color-bg-light);
+      --color-card: var(--color-card-light);
+      --color-text: var(--color-text-light);
+    }
+    html, body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      transition: var(--transition);
+    }
+    body {
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+    .particles {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    header {
+      width: 100%;
+      background: var(--color-header);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: var(--header-height);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .site-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      color: var(--color-accent);
+      text-decoration: none;
+      margin-right: 24px;
+    }
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--color-text);
+      font-size: 1rem;
+      padding: 8px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+      font-weight: 500;
+      outline: none;
+      position: relative;
+    }
+    .nav-btn.active, .nav-btn:focus {
+      background: var(--color-accent2);
+      color: #23262b;
+    }
+    .nav-btn:hover:not(.active):not(:focus) {
+      background: rgba(79,144,255,0.10);
+      color: var(--color-accent);
+    }
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 16px;
+    }
+    .toggle-switch {
+      width: 42px;
+      height: 24px;
+      background: var(--color-border);
+      border-radius: 12px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+      border: 1px solid var(--color-border);
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .toggle-slider {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      background: var(--color-card);
+      border-radius: 50%;
+      transition: left 0.25s, background 0.3s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
+    .toggle-switch[data-theme="light"] .toggle-slider {
+      left: 20px;
+      background: #ffe066;
+    }
+    .toggle-switch[data-theme="dark"] .toggle-slider {
+      left: 2px;
+      background: var(--color-card);
+    }
+    .toggle-moon, .toggle-sun {
+      font-size: 1.1em;
+      color: var(--color-accent2);
+      user-select: none;
+    }
+    .toggle-sun {
+      color: #ffe066;
+      margin-left: 2px;
+    }
+    .toggle-moon {
+      color: #5865f2;
+      margin-right: 2px;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 42px;
+      margin-bottom: 48px;
+      min-height: 60vh;
+      z-index: 1;
+      position: relative;
+    }
+    .card {
+      background: var(--color-card);
+      color: var(--color-text);
+      padding: 34px 30px 30px 30px;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1.07rem;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+    .card p {
+      margin: 1.1em 0;
+    }
+    .card em {
+      color: var(--color-accent2);
+    }
+    .card a {
+      color: var(--color-accent);
+      text-decoration: underline;
+      word-break: break-all;
+    }
+    .card a:hover {
+      color: var(--color-accent2);
+      text-decoration: underline;
+    }
+    .card img {
+      margin-top: 14px;
+      border-radius: 6px;
+    }
+    @media (max-width: 600px) {
+      header {
+        padding: 0 10px;
+      }
+      .card {
+        padding: 18px 7vw 22px 7vw;
+      }
+    }
   </style>
+  <script>
+    // Persistent theme toggle
+    (function() {
+      function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        var toggle = document.getElementById('theme-toggle-switch');
+        if (toggle) toggle.setAttribute('data-theme', theme);
+      }
+      function getPreferredTheme() {
+        const stored = localStorage.getItem('theme');
+        if (stored) return stored;
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+        return 'light';
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        setTheme(getPreferredTheme());
+        var toggle = document.getElementById('theme-toggle-switch');
+        if (toggle) {
+          toggle.addEventListener('click', function() {
+            var current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+          });
+        }
+      });
+    })();
+  </script>
   <script data-goatcounter="https://proptrend.goatcounter.com/count"
           async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
-  <h1>About PropTrend</h1>
+  <canvas id="particles" class="particles"></canvas>
+  <header>
+    <a href="index.html" class="site-title">PropTrend</a>
+    <nav>
+      <a href="index.html" class="nav-btn">Home</a>
+      <a href="simulator.html" class="nav-btn">Simulator</a>
+      <a href="about.html" class="nav-btn active" tabindex="0">About</a>
+      <span class="theme-toggle">
+        <span class="toggle-moon" aria-label="Dark mode" title="Dark mode">🌙</span>
+        <span id="theme-toggle-switch" class="toggle-switch" data-theme="dark" tabindex="0" role="button" aria-label="Toggle theme">
+          <span class="toggle-slider"></span>
+        </span>
+        <span class="toggle-sun" aria-label="Light mode" title="Light mode">☀️</span>
+      </span>
+    </nav>
+  </header>
+  <main>
+    <div class="card">
 
-  <p>
-    PropTrend is a small project aiming to make macro-level Australian real estate data more easily accessible.
-    Source data is drawn mainly from the Australian Bureau of Statistics (ABS), and a few other publicly available sources,
-    interpolated where necessary, with minor transformations applied to produce a continuous dataset up to the present.
-  </p>
-
-  <p>
-    Forecasts five years into the future are generated using additive exponential smoothing with a linear trend. 
-    This method extends historical trends forward in time without introducing seasonal components or damping. 
-    It captures persistent upward or downward momentum in the data, providing a transparent and interpretable projection consistent with observed pricing dynamics.
-  </p>
-
-  <p>
-    In future updates, PropTrend will also include alternative forecasting models to allow users to compare different methodologies and better understand the uncertainty in forward projections.
-  </p>
-
-  <p>
-    The idea arose from the difficulty of finding high-level, clean, and publicly accessible property market data
-    presented in a usable format.
-  </p>
-
-  <p>
-    This site is under development. More tools and data visualisations are coming soon.
-  </p>
-
-  <p><em>Thanks for checking it out!<br>Nathan</em></p>
-
-  <p>
-    For enquiries or feedback, contact me at
-    <a href="mailto:tropics.79exempts@icloud.com">tropics.79exempts@icloud.com</a>.
-  </p>
-
-  <p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 20px auto;">
-    <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
-  </p>
-  <a href="index.html">
-    <button>← Back to Charts</button>
-  </a>
-  <p>If you find PropTrend valuable, consider supporting its development:</p>
-<a href="https://www.buymeacoffee.com/nathan274" target="_blank" rel="noopener">
-  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="max-width: 100%; height: auto;">
-</a>
+      <h2 style="margin-top:0;">About PropTrend</h2>
+      <p>
+        PropTrend is a small project aiming to make macro-level Australian real estate data more easily accessible.
+        Source data is drawn mainly from the Australian Bureau of Statistics (ABS), and a few other publicly available sources,
+        interpolated where necessary, with minor transformations applied to produce a continuous dataset up to the present.
+      </p>
+      <p>
+        Forecasts five years into the future are generated using additive exponential smoothing with a linear trend. 
+        This method extends historical trends forward in time without introducing seasonal components or damping. 
+        It captures persistent upward or downward momentum in the data, providing a transparent and interpretable projection consistent with observed pricing dynamics.
+      </p>
+      <p>
+        In future updates, PropTrend will also include alternative forecasting models to allow users to compare different methodologies and better understand the uncertainty in forward projections.
+      </p>
+      <p>
+        The idea arose from the difficulty of finding high-level, clean, and publicly accessible property market data
+        presented in a usable format.
+      </p>
+      <p>
+        This site is under development. More tools and data visualisations are coming soon.
+      </p>
+      <p><em>Thanks for checking it out!<br>Nathan</em></p>
+      <p>
+        For enquiries or feedback, contact me at
+        <a href="mailto:tropics.79exempts@icloud.com">tropics.79exempts@icloud.com</a>.
+      </p>
+      <p style="text-align: center; font-size: 0.9rem; max-width: 700px; margin: 20px auto;">
+        <em>Tip:</em> Click on city names in the legend to hide/show them. Click and drag across the chart to zoom in. Double-click to reset.
+      </p>
+      <p>If you find PropTrend valuable, consider supporting its development:</p>
+      <a href="https://www.buymeacoffee.com/nathan274" target="_blank" rel="noopener">
+        <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="max-width: 100%; height: auto;">
+      </a>
+    </div>
+  </main>
+  <script>
+    // Particle background
+    (() => {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = window.innerWidth, height = window.innerHeight;
+      let dpr = window.devicePixelRatio || 1;
+      function resize() {
+        width = window.innerWidth; height = window.innerHeight;
+        dpr = window.devicePixelRatio || 1;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.setTransform(1,0,0,1,0,0);
+        ctx.scale(dpr, dpr);
+      }
+      window.addEventListener('resize', resize);
+      resize();
+      // Particle params
+      const N = Math.floor(Math.max(48, width * height / 9000));
+      const particles = Array.from({length:N}, () => ({
+        x: Math.random()*width,
+        y: Math.random()*height,
+        vx: (Math.random()-0.5)*0.25,
+        vy: (Math.random()-0.5)*0.25,
+        r: 1.1 + Math.random()*1.3
+      }));
+      function step() {
+        ctx.clearRect(0,0,width,height);
+        // Draw lines
+        for (let i=0; i<N; ++i) {
+          for (let j=i+1; j<N; ++j) {
+            const a = particles[i], b = particles[j];
+            const dx = a.x-b.x, dy = a.y-b.y;
+            const dist = Math.sqrt(dx*dx+dy*dy);
+            if (dist < 84) {
+              ctx.save();
+              ctx.globalAlpha = 0.11 * (1 - dist/84);
+              ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim() || '#4f90ff';
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+              ctx.restore();
+            }
+          }
+        }
+        // Draw particles
+        for (let p of particles) {
+          ctx.save();
+          ctx.globalAlpha = 0.72;
+          ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--color-accent2').trim() || '#ffd24a';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+          ctx.fill();
+          ctx.restore();
+        }
+        // Move
+        for (let p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) { p.x = 0; p.vx *= -1; }
+          if (p.x > width) { p.x = width; p.vx *= -1; }
+          if (p.y < 0) { p.y = 0; p.vy *= -1; }
+          if (p.y > height) { p.y = height; p.vy *= -1; }
+        }
+        requestAnimationFrame(step);
+      }
+      step();
+    })();
+  </script>
 </body>
 </html>
